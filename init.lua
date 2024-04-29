@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,10 +102,19 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
+
+-- do not wrap
+vim.opt.wrap = false
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
+
+-- Do not auto-resize when creating/deleting splits
+vim.opt.equalalways = false
+
+-- enable 24-bit6 RGB color in the TUI
+vim.opt.termguicolors = true
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -202,6 +211,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
     vim.highlight.on_yank()
   end,
+})
+
+-- Wrap for markdown file
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = { '*.md' },
+  command = 'setlocal wrap',
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -592,6 +607,10 @@ require('lazy').setup({
             },
           },
         },
+        clangd = {},
+        gopls = {},
+        pyright = {},
+        rust_analyzer = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -607,6 +626,18 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'clang-format',
+        'codelldb',
+        'js-debug-adapter',
+        -- python
+        'black',
+        'debugpy',
+        'mypy',
+        'ruff',
+        -- css
+        'css-lsp',
+        'html-lsp',
+        'typescript-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -835,7 +866,32 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'cmake',
+        'cpp',
+        'css',
+        'dockerfile',
+        'elixir',
+        'go',
+        'haskell',
+        'html',
+        'javascript',
+        'json',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'ocaml',
+        'python',
+        'rust',
+        'toml',
+        'tsx',
+        'typescript',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -885,7 +941,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
